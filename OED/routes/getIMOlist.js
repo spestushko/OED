@@ -31,7 +31,13 @@ router.get('/imo', function (req, res) {
           var formatStr = '';
           var imoLen = 0;
           var nextImo = true;
-          var resArray
+          var tempShipName = '';
+          var resShipArray;
+          var tempImoNum = '';
+          var resArray;
+          var nameArray;
+          var foundDelim = true;
+          var resObj = [];
           for (var i = 0; i < resStr.length; ++i){
             if (parseInt(resStr.charAt(i)) >= 0 && parseInt(resStr.charAt(i)) <= 9 && nextImo){
               formatStr += resStr.charAt(i);
@@ -41,18 +47,30 @@ router.get('/imo', function (req, res) {
             if ((resStr.charCodeAt(i) >= 65 && resStr.charCodeAt(i) <= 90) ||
                  resStr.charCodeAt(i) >= 97 && resStr.charCodeAt(i) <= 122){
                 nextImo = true;
+                if (foundDelim == true)
+                  tempShipName += resStr.charAt(i);
+            }
+
+            if (resStr.charAt(i) == '>'){
+              tempShipName += ' ';
+              foundDelim = false;
             }
 
             if (imoLen == 7){
               formatStr += ' ';
               imoLen = 0;
               nextImo = false;
+              foundDelim = true;
             }
           }
+          // At this point res string becmes a res array
           resArray = formatStr.split(" ");
-          console.log(formatStr);
-          res.send({state:'SUCCESS', dataArray:resArray});
+          resShipArray = tempShipName.split(" ");
 
+          console.log(formatStr);
+          console.log(tempShipName);
+
+          res.send({state:'SUCCESS', dataArray:resArray, dataShipArray:resShipArray});
           return resArray;
         }
       }, function (err, result) {
